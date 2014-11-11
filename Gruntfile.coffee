@@ -5,7 +5,6 @@ module.exports = (grunt) ->
 	grunt.initConfig
 		pkg: grunt.file.readJSON 'package.json'
 
-		
 		coffee:
 			build:
 				expand: yes
@@ -17,45 +16,45 @@ module.exports = (grunt) ->
 		coffeelint:
 			build:
 				files: src: ['src/**/*.coffee', 'test/**/*.coffee']
+
 			options:
 				no_tabs: level: 'ignore' # this is tab land, boy
 				indentation: value: 1 # single tabs
 		
-
 		mochaTest:
 			test:
 				options:
 					reporter: 'spec'
 					require: ['coffee-script/register']
 
-				src: ['test/**/*.test.(js|coffee)']
+				src: ['test/**/*.test.{js,coffee}']
 
 		watch:
+			default:
+				files: ['src/**/*.{js,coffee}', 'test/**/*.{js,coffee}']
+				tasks: ['default']
+
 			dev:
-				files: ['src/**/*.(js|coffee)', 'test/**/*.(js|coffee)']
+				files: ['src/**/*.{js,coffee}', 'test/**/*.{js,coffee}']
 				tasks: ['lint', 'test']
 
 			test:
-				files: ['src/**/*.(js|coffee)', 'test/**/*.(js|coffee)']
+				files: ['src/**/*.{js,coffee}', 'test/**/*.{js,coffee}']
 				tasks: ['test']
 
 			lint:
-				files: ['src/**/*.(js|coffee)', 'test/**/*.(js|coffee)']
+				files: ['src/**/*.{js,coffee}', 'test/**/*.{js,coffee}']
 				tasks: ['lint']
 
-	grunt.registerTask 'default', ["build"]
-
-	grunt.registerTask 'build', [
-		'lint'
-		'test'
-		'coffee:build'
-	]
-
+	grunt.registerTask 'default', ['lint', 'test', 'build']
 	grunt.registerTask 'dev', ['lint', 'test']
+
+	grunt.registerTask 'build', ['coffee:build']
 
 	grunt.registerTask 'lint', [
 		'coffeelint:build'
 	]
+
 	grunt.registerTask 'test', ['mochaTest:test']
 
 	grunt.registerTask 'watch-dev', ['watch:dev']
