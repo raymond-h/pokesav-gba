@@ -1,6 +1,7 @@
 _ = require 'lodash'
 
 Section = require './section'
+Pokemon = require './pokemon'
 textEncoding = require './text-encoding'
 
 module.exports = class GameSave
@@ -19,13 +20,17 @@ module.exports = class GameSave
 				get: => (@trainerId & 0xFFFF0000) >> 16
 
 	read: (buffer) ->
+		sections = new Array 14
 		for i in [0...14]
 			sectionBuffer = buffer.slice i * Section.size, (i+1) * Section.size
 
 			section = Section.split sectionBuffer
-			@parsers[section.id]?.call @, section.data
+			sections[section.id] = section
 
 			@saveIndex = section.saveIndex
+
+		for section in sections
+			@parsers[section.id]?.call @, section.data
 
 	parsers:
 		0: (data) ->
@@ -56,3 +61,16 @@ module.exports = class GameSave
 					# emerald
 					@game = 'emerald'
 					@securityKey = gameCode
+
+		1: (data) ->
+			offsets = (require './section1-offsets')[@game]
+
+			teamSize = data.readUInt32LE offsets.teamSize
+			teamData = data.slice offsets.teamStart, offsets.teamStart + teamSize*100
+
+			@team = for i in [0...teamSize]
+				pkmnData = teamData.slice i*100, (i+1)*100
+
+				new Pokemon pkmnData
+
+			@money = (data.readUInt32LE offsets.money) ^ @securityKey
