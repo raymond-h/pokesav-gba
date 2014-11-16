@@ -14,7 +14,10 @@ exports.toEncoded = (char) ->
 		else 0x00
 
 exports.encode = (str, len = str.length) ->
-	new Buffer (exports.toEncoded c for c in str)
+	buf = new Buffer len
+	(buf.writeUInt8 (exports.toEncoded c), i) for c,i in str
+	buf.fill 0xFF, str.length, len
+	buf
 
 exports.toDecoded = (byte) ->
 	switch
@@ -30,4 +33,9 @@ exports.toDecoded = (byte) ->
 		else ' '
 
 exports.decode = (buf, len = buf.length) ->
-	(exports.toDecoded b for b in buf).join ''
+	chars = for b in buf
+		break if b is 0xFF
+
+		exports.toDecoded b
+	
+	chars.join ''

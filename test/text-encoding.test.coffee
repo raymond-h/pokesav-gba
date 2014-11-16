@@ -32,6 +32,12 @@ describe 'Text encoding', ->
 
 			encoding.encode(str).toJSON().should.deep.equal data
 
+		it 'should pad with 0xFF if input string shorter than len param', ->
+			str = 'Jebz'
+			data = [0xC4, 0xD9, 0xD6, 0xEE, 0xFF, 0xFF, 0xFF, 0xFF]
+
+			encoding.encode(str, 8).toJSON().should.deep.equal data
+
 	describe '.decode()', ->
 		it 'should decode alphanumerical symbols', ->
 			buf = new Buffer [0xBB..0xD4]
@@ -53,3 +59,10 @@ describe 'Text encoding', ->
 			buf = new Buffer [0xC4, 0xD9, 0xD6, 0xEE, 0xCC, 0xE3, 0xEC, 0xEC]
 
 			encoding.decode(buf).should.equal 'JebzRoxx'
+
+		it 'should stop prematurely at a terminator symbol', ->
+			buf = new Buffer [0xC4, 0xD9, 0xD6, 0xEE, 0xFF, 0xFF, 0xFF, 0xFF]
+
+			decoded = encoding.decode buf
+
+			decoded.should.have.length(4).and.equal 'Jebz'
