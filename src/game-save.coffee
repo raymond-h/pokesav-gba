@@ -74,3 +74,8 @@ module.exports = class GameSave
 				new Pokemon pkmnData
 
 			@money = (data.readUInt32LE offsets.money) ^ @securityKey
+
+		4: (data) ->
+			if @game is 'firered-leafgreen'
+				# there is such a thing as a rival here
+				@rivalName = textEncoding.decode data.slice 0x0BCC, 0x0BCC+8
