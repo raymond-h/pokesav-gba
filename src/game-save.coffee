@@ -2,6 +2,7 @@ _ = require 'lodash'
 
 Section = require './section'
 Pokemon = require './pokemon'
+Item = require './item'
 textEncoding = require './text-encoding'
 
 module.exports = class GameSave
@@ -74,6 +75,28 @@ module.exports = class GameSave
 				new Pokemon pkmnData
 
 			@money = (data.readUInt32LE offsets.money) ^ @securityKey
+
+			readInventorySlot = (targetSlot, securityKey) =>
+				securityKey ?= @securityKey
+				slotOrder = ['pc', 'item', 'keyItem', 'ball', 'tmHm', 'berry']
+
+				offset = offsets.inventoryStart
+				for slot in slotOrder
+					break if slot is targetSlot
+
+					offset += offsets.inventorySizes[slot] * Item.itemEntryLength
+
+				size = offsets.inventorySizes[targetSlot]
+
+				Item.readList data, offset, size, securityKey
+
+			@pcItems = readInventorySlot 'pc', 0
+			@inventory =
+				item: readInventorySlot 'item'
+				keyItem: readInventorySlot 'keyItem'
+				ball: readInventorySlot 'ball'
+				tmHm: readInventorySlot 'tmHm'
+				berry: readInventorySlot 'berry'
 
 		4: (data) ->
 			if @game is 'firered-leafgreen'
