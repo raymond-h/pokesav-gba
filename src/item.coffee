@@ -7,16 +7,23 @@ exports.itemEntryLength = itemEntryLength = 4
 exports.nothing = 0x00000000
 
 exports.isNothing = (item) ->
-	if _.isObject item
-		item.name is 'Nothing' or item.type is 0 or item.amount is 0
+	switch
+		when _.isObject item
+			item.name is 'Nothing' or item.type is 0 or item.amount is 0
 
-	else if _.isNumber item
-		item is exports.nothing
+		when _.isString item
+			item is 'Nothing'
 
-	else false
+		when _.isNumber item
+			item is exports.nothing
+
+		else false
 
 exports.readType = (buffer, offset) ->
-	data.items[buffer.readUInt16LE offset]
+	if Buffer.isBuffer buffer
+		exports.readType buffer.readUInt16LE offset
+	
+	else data.items[buffer]
 
 exports.readItem = (buffer, offset, securityKey = 0) ->
 	{
