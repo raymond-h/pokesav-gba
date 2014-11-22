@@ -1,6 +1,16 @@
 fs = require 'fs'
 util = require 'util'
-{argv} = require 'yargs'
+argv = require 'yargs'
+	.alias 'b', 'baseStatsFile'
+	.argv
+
+if argv.baseStatsFile?
+	BaseDataReader = require './base-data'
+
+	data = BaseDataReader.readEntries fs.readFileSync argv.baseStatsFile
+	console.log JSON.stringify data
+
+	return
 
 GameSave = require './game-save'
 
