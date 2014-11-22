@@ -4,6 +4,7 @@ dataEncryption = (require './encryption').pokemonData
 Item = require './item'
 
 data = require '../data/pokemon.json'
+pkmnBaseData = require '../data/base-data.json'
 
 module.exports = class Pokemon
 
@@ -80,8 +81,13 @@ module.exports = class Pokemon
 				when 'evsCondition' then @readEvsCondition substructSlice
 				when 'misc' then @readMisc substructSlice
 
+		baseData = pkmnBaseData[@speciesIndex]
+
+		@ability = baseData.ability ? baseData.abilities[@ability]
+
 	readGrowth: (buffer) ->
-		@species = data.pokemon[buffer.readUInt16LE 0x0]
+		@speciesIndex = buffer.readUInt16LE 0x0
+		@species = data.pokemon[@speciesIndex]
 
 		heldItem = buffer.readUInt16LE 0x2
 		@heldItem = Item.readType heldItem if not Item.isNothing heldItem
