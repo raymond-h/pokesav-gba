@@ -145,6 +145,6 @@ module.exports = class Pokemon
 		for stat,i in @statNames
 			@ivs[stat] = (ivsEggAbilityData >> (i * 5)) & 0b11111
 
-		@isEgg = (ivsEggAbilityData >> 30) & 0b1
+		@isEgg = ((ivsEggAbilityData >> 30) & 0b1) is 1
 
 		@ability = (ivsEggAbilityData >> 31) & 0b1
