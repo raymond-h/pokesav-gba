@@ -1,4 +1,5 @@
 module.exports =
+	Savefile: require './savefile'
 	GameSave: require './game-save'
 	Section: require './section'
 

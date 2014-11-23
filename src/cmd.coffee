@@ -14,8 +14,8 @@ if argv.baseStatsFile?
 
 	return
 
-{GameSave} = pokesavGba
+{Savefile} = pokesavGba
 
-saveA = new GameSave fs.readFileSync argv.file
+save = new Savefile fs.readFileSync argv.file
 
-console.log util.inspect saveA, depth: null
+console.log util.inspect save, depth: null
