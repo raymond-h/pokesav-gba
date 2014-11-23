@@ -2,6 +2,9 @@ textEncoding = require './text-encoding'
 {languages} = require './constants'
 dataEncryption = (require './encryption').pokemonData
 Item = require './item'
+Experience = require './experience'
+
+{alias} = require './util'
 
 data = require '../data/pokemon.json'
 pkmnBaseData = require '../data/base-data.json'
@@ -20,17 +23,21 @@ module.exports = class Pokemon
 		@read buffer
 
 		Object.defineProperties @,
-			# alias exp to experience
-			exp:
-				enumerable: no
-				get: => @experience
-				set: (exp) => @experience = exp
-
 			# calculate level from/to exp automatically (not impl.)
 			level:
 				enumerable: yes
-				get: => undefined
-				set: (lvl) => undefined
+				get: =>
+					growthType = pkmnBaseData[@speciesIndex].experienceCurve
+
+					Experience.levelFromExperience growthType, @experience
+
+				set: (lvl) =>
+					growthType = pkmnBaseData[@speciesIndex].experienceCurve
+
+					@experience = Experience.calculate growthType, lvl
+
+		alias @, 'level', 'lvl', 'lv'
+		alias @, 'experience', 'exp', 'xp'
 
 	read: (buffer) ->
 		@personalityValue = buffer.readUInt32LE 0x00
