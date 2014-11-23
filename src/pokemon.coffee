@@ -71,8 +71,6 @@ module.exports = class Pokemon
 
 		@readData pkmnData
 
-		yes
-
 	calculateDataOrder: ->
 		orderNum = @personalityValue % 24
 
