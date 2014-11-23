@@ -6,9 +6,20 @@ Pokémon GBA savefile reader
 
 ## Example usage
 ```js
-var pokesav-gba = require('pokesav-gba');
+var fs = require('fs');
+var pokesavGba = require('pokesav-gba');
 
-// Do whatever you want with 'pokesav-gba'!
+fileBuffer = fs.readFileSync('path/to/file.sav');
+
+savefile = new pokesavGba.Savefile(fileBuffer);
+save = savefile.current;
+
+console.log('Trainer name is ' + save.name);
+for(var i = 0; i < save.team.length; i++) {
+	pkmn = save.team[i];
+
+	console.log('-- ' + pkmn.name + ' is a Lv' + pkmn.level + ' ' + pkmn.species);
+}
 ```
     
 ## License
