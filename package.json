@@ -9,6 +9,10 @@
     "prepublish": "grunt build",
     "test": "grunt test"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raymond-h/pokesav-gba.git"
+  },
   "devDependencies": {
     "chai": "^1.10.0",
     "grunt-coffeelint": "0.0.13",
