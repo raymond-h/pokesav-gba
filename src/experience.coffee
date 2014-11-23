@@ -11,7 +11,7 @@ exports.levelFromExperience = _.memoize (type, exp) ->
 
 	level = 0
 
-	while (exports.calculate type, level+1) <= exp
+	while level < 100 and (exports.calculate type, level+1) <= exp
 		level++
 
 	level
