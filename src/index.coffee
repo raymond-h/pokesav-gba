@@ -1,19 +1,15 @@
-fs = require 'fs'
-util = require 'util'
-argv = require 'yargs'
-	.alias 'b', 'baseStatsFile'
-	.argv
+module.exports =
+	GameSave: require './game-save'
+	Section: require './section'
 
-if argv.baseStatsFile?
-	BaseDataReader = require './base-data'
+	Pokemon: require './pokemon'
+	Item: require './item'
+	PcStorage: (require './pc-boxes').PcStorage
+	Box: (require './pc-boxes').Box
 
-	data = BaseDataReader.readEntries fs.readFileSync argv.baseStatsFile
-	console.log JSON.stringify data
+	Experience: require './experience'
+	Encryption: require './encryption'
+	TextEncoding: require './text-encoding'
+	Constants: require './constants'
 
-	return
-
-GameSave = require './game-save'
-
-saveA = new GameSave fs.readFileSync argv.file
-
-console.log util.inspect saveA, depth: null
+	BaseDataReader: require './base-data'
