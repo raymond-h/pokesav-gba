@@ -43,6 +43,30 @@ module.exports = class Pokemon
 
 					@experience = Experience.calculate growthType, lvl
 
+			natureIndex:
+				enumerable: no
+				get: => @personalityValue % 25
+
+			nature:
+				enumerable: yes
+				get: => data.natures[@natureIndex]
+
+			gender:
+				enumerable: yes
+				get: =>
+					baseGender = pkmnBaseData[@speciesIndex].gender
+
+					switch baseGender
+						when 0xFF then null # genderless
+						when 0xFE then 'female'
+						when 0x00 then 'male'
+
+						else
+							gender = @personalityValue & 0xFF
+							if gender >= baseGender
+								'male'
+							else 'female'
+
 		alias @, 'level', 'lvl', 'lv'
 		alias @, 'experience', 'exp', 'xp'
 
