@@ -1,4 +1,3 @@
-Q = require 'q'
 chai = require 'chai'
 
 {expect} = chai
