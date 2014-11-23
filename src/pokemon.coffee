@@ -31,6 +31,14 @@ module.exports = class Pokemon
 
 		Object.defineProperties @,
 			# calculate level from/to exp automatically
+			originalPublicId:
+				enumerable: no
+				get: => @trainerId & 0xFFFF
+
+			originalPrivateId:
+				enumerable: no
+				get: => (@trainerId & 0xFFFF0000) >> 16
+
 			level:
 				enumerable: yes
 				get: =>
@@ -66,6 +74,16 @@ module.exports = class Pokemon
 							if gender >= baseGender
 								'male'
 							else 'female'
+
+			shiny:
+				enumerable: yes
+				get: =>
+					shininess =
+						@originalPublicId ^ @originalPrivateId ^
+						(@personalityValue & 0xFFFF) ^
+						(@personalityValue >> 16) & 0xFFFF
+
+					shininess < 8
 
 		alias @, 'level', 'lvl', 'lv'
 		alias @, 'experience', 'exp', 'xp'
