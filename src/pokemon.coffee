@@ -30,7 +30,7 @@ module.exports = class Pokemon
 		@read buffer
 
 		Object.defineProperties @,
-			# calculate level from/to exp automatically (not impl.)
+			# calculate level from/to exp automatically
 			level:
 				enumerable: yes
 				get: =>
