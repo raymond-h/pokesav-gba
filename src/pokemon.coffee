@@ -33,11 +33,11 @@ module.exports = class Pokemon
 			# calculate level from/to exp automatically
 			originalPublicId:
 				enumerable: no
-				get: => @trainerId & 0xFFFF
+				get: => @originalTrainerId & 0xFFFF
 
 			originalPrivateId:
 				enumerable: no
-				get: => (@trainerId & 0xFFFF0000) >> 16
+				get: => (@originalTrainerId >> 16) & 0xFFFF
 
 			level:
 				enumerable: yes
