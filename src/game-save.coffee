@@ -3,6 +3,7 @@ _ = require 'lodash'
 Section = require './section'
 Pokemon = require './pokemon'
 Item = require './item'
+{PcStorage} = require './pc-boxes'
 textEncoding = require './text-encoding'
 
 module.exports = class GameSave
@@ -30,75 +31,88 @@ module.exports = class GameSave
 
 			@saveIndex = section.saveIndex
 
+		@readSections sections
+
+	readSections: (sections) ->
+		pcBuffer = new Buffer 33744
+
 		for section in sections
-			@parsers[section.id]?.call @, section.data
+			{id, data} = section
 
-	parsers:
-		0: (data) ->
-			@name = textEncoding.decode data.slice 0x00, 0x00 + 7
-			@gender = if (data.readUInt8 0x08) is 0 then 'male' else 'female'
-			@trainerId = data.readUInt32LE 0x0A
-
-			@timePlayed =
-				hours: data.readUInt16LE 0x0E
-				minutes: data.readUInt8 0x0E+2
-				seconds: data.readUInt8 0x0E+3
-				frames: data.readUInt8 0x0E+4
-
-			gameCode = data.readUInt32LE 0xAC
-
-			switch gameCode
+			switch id
 				when 0
-					# ruby/sapphire
-					@game = 'ruby-sapphire'
-					@securityKey = 0x00 # 0 xor x = x
+					@name = textEncoding.decode data.slice 0x00, 0x00 + 7
+					@gender = if (data.readUInt8 0x08) is 0 then 'male' else 'female'
+					@trainerId = data.readUInt32LE 0x0A
+
+					@timePlayed =
+						hours: data.readUInt16LE 0x0E
+						minutes: data.readUInt8 0x0E+2
+						seconds: data.readUInt8 0x0E+3
+						frames: data.readUInt8 0x0E+4
+
+					gameCode = data.readUInt32LE 0xAC
+
+					switch gameCode
+						when 0
+							# ruby/sapphire
+							@game = 'ruby-sapphire'
+							@securityKey = 0x00 # 0 xor x = x
+
+						when 1
+							# firered / leafgreen
+							@game = 'firered-leafgreen'
+							@securityKey = data.readUInt32LE 0x0AF8
+
+						else
+							# emerald
+							@game = 'emerald'
+							@securityKey = gameCode
 
 				when 1
-					# firered / leafgreen
-					@game = 'firered-leafgreen'
-					@securityKey = data.readUInt32LE 0x0AF8
+					offsets = (require './section1-offsets')[@game]
 
-				else
-					# emerald
-					@game = 'emerald'
-					@securityKey = gameCode
+					teamSize = data.readUInt32LE offsets.teamSize
+					teamData = data.slice offsets.teamStart, offsets.teamStart + teamSize*100
 
-		1: (data) ->
-			offsets = (require './section1-offsets')[@game]
+					@team = for i in [0...teamSize]
+						pkmnData = teamData.slice i*100, (i+1)*100
 
-			teamSize = data.readUInt32LE offsets.teamSize
-			teamData = data.slice offsets.teamStart, offsets.teamStart + teamSize*100
+						new Pokemon pkmnData
 
-			@team = for i in [0...teamSize]
-				pkmnData = teamData.slice i*100, (i+1)*100
+					@money = (data.readUInt32LE offsets.money) ^ @securityKey
 
-				new Pokemon pkmnData
+					readInventorySlot = (targetSlot, securityKey) =>
+						securityKey ?= @securityKey
+						slotOrder = ['pc', 'item', 'keyItem', 'ball', 'tmHm', 'berry']
 
-			@money = (data.readUInt32LE offsets.money) ^ @securityKey
+						offset = offsets.inventoryStart
+						for slot in slotOrder
+							break if slot is targetSlot
 
-			readInventorySlot = (targetSlot, securityKey) =>
-				securityKey ?= @securityKey
-				slotOrder = ['pc', 'item', 'keyItem', 'ball', 'tmHm', 'berry']
+							offset += offsets.inventorySizes[slot] * Item.itemEntryLength
 
-				offset = offsets.inventoryStart
-				for slot in slotOrder
-					break if slot is targetSlot
+						size = offsets.inventorySizes[targetSlot]
 
-					offset += offsets.inventorySizes[slot] * Item.itemEntryLength
+						Item.readList data, offset, size, securityKey
 
-				size = offsets.inventorySizes[targetSlot]
+					@pcItems = readInventorySlot 'pc', 0
+					@inventory =
+						item: readInventorySlot 'item'
+						keyItem: readInventorySlot 'keyItem'
+						ball: readInventorySlot 'ball'
+						tmHm: readInventorySlot 'tmHm'
+						berry: readInventorySlot 'berry'
 
-				Item.readList data, offset, size, securityKey
+				when 4
+					if @game is 'firered-leafgreen'
+						# there is such a thing as a rival here
+						@rivalName = textEncoding.decode data.slice 0x0BCC, 0x0BCC+8
 
-			@pcItems = readInventorySlot 'pc', 0
-			@inventory =
-				item: readInventorySlot 'item'
-				keyItem: readInventorySlot 'keyItem'
-				ball: readInventorySlot 'ball'
-				tmHm: readInventorySlot 'tmHm'
-				berry: readInventorySlot 'berry'
+				when 5,6,7,8,9,10,11,12
+					data.copy pcBuffer, (id - 5) * 3968, 0, 3968
 
-		4: (data) ->
-			if @game is 'firered-leafgreen'
-				# there is such a thing as a rival here
-				@rivalName = textEncoding.decode data.slice 0x0BCC, 0x0BCC+8
+				when 13
+					data.copy pcBuffer, (id - 5) * 3968, 0, 2000
+
+					@pcPkmnStorage = new PcStorage pcBuffer

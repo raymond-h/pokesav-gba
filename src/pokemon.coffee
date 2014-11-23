@@ -1,3 +1,5 @@
+_ = require 'lodash'
+
 textEncoding = require './text-encoding'
 {languages} = require './constants'
 dataEncryption = (require './encryption').pokemonData
@@ -18,6 +20,11 @@ module.exports = class Pokemon
 		heart: 0b1000
 
 	statNames: ['hp', 'atk', 'def', 'spd', 'spAtk', 'spDef']
+
+	@fromBuffer: (buffer) ->
+		return null if _.all buffer, (b) -> b is 0
+
+		new Pokemon buffer
 
 	constructor: (buffer) ->
 		@read buffer
@@ -63,6 +70,8 @@ module.exports = class Pokemon
 		# TODO: verify checksum
 
 		@readData pkmnData
+
+		yes
 
 	calculateDataOrder: ->
 		orderNum = @personalityValue % 24
