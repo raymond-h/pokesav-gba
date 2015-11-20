@@ -29,13 +29,13 @@ describe 'Text encoding', ->
 			str = 'JebzRoxx'
 			data = [0xC4, 0xD9, 0xD6, 0xEE, 0xCC, 0xE3, 0xEC, 0xEC]
 
-			encoding.encode(str).toJSON().should.deep.equal data
+			[].slice.call(encoding.encode(str)).should.deep.equal data
 
 		it 'should pad with 0xFF if input string shorter than len param', ->
 			str = 'Jebz'
 			data = [0xC4, 0xD9, 0xD6, 0xEE, 0xFF, 0xFF, 0xFF, 0xFF]
 
-			encoding.encode(str, 8).toJSON().should.deep.equal data
+			[].slice.call(encoding.encode(str, 8)).should.deep.equal data
 
 	describe '.decode()', ->
 		it 'should decode alphanumerical symbols', ->
