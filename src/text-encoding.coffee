@@ -31,16 +31,31 @@ exports.toDecoded = (byte) ->
 			String.fromCharCode 48 + (byte - 0xA1)
 			
 		when 0xAB
-			0x21
+			"!"
 			
 		when 0xAC
-			0x3F
+			"?"
 			
 		when 0xAD
-			0x2E
+			"."
 			
 		when 0xAE
-			0xAD
+			"-"
+			
+		when 0xAF
+			"・"
+			
+		when 0xB0
+			"…"
+			
+		when 0xB5
+			"♂"
+			
+		when 0xB6
+			"♀"
+			
+		when 0x1A <= byte <= 0x1d
+			String.fromCharCode 232 + (byte - 0x1A)
 
 		else ' '
 
