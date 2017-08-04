@@ -55,7 +55,7 @@ exports.toDecoded = (byte) ->
 			'♀'
 			
 		when 0x01 <= byte <= 0x03
-			String.fromCharCode 182 + (byte - 0x01)
+			String.fromCharCode 192 + (byte - 0x01)
 			
 		when 0x04 <= byte <= 0x0C and byte != 0x0A
 			String.fromCharCode 199 + (byte - 0x04)
@@ -75,7 +75,7 @@ exports.toDecoded = (byte) ->
 		when byte is 0x15
 			'ß'
 			
-		when 0x16 <= byte <= 0x07
+		when 0x16 <= byte <= 0x17
 			String.fromCharCode 224 + (byte - 0x16)
 			
 		when 0x19 <= byte <= 0x21 and byte != 0x1F
@@ -102,10 +102,10 @@ exports.toDecoded = (byte) ->
 		when byte is 0x2D
 			'&'
 			
-		when byte is 0x23
+		when byte is 0x2E
 			'+'
 			
-		when byte is 0x36
+		when byte is 0x35
 			'='
 			
 		when byte is 0x36
@@ -135,8 +135,17 @@ exports.toDecoded = (byte) ->
 		when byte is 0x6F
 			'í'
 			
-		when 0x79 <= byte <= 0x7C
-			String.fromCharCode 8592 + (byte - 0x79)
+		when byte is 0x79
+			'↑'
+			
+		when byte is 0x7A
+			'↓'
+		
+		when byte is 0x7B
+			'←'
+		
+		when byte is 0x7C
+			'→'
 			
 		when 0x7D <= byte <= 0x83
 			'*'
@@ -155,6 +164,15 @@ exports.toDecoded = (byte) ->
 			
 		when 0xB3 <= byte <= 0xB4
 			String.fromCharCode 8216 + (byte - 0xB3)
+			
+		when byte is 0xB8
+			','
+			
+		when byte is 0xB9
+			'×'
+			
+		when byte is 0xBA
+			'/'
 			
 		when byte is 0xEF
 			'▶'
