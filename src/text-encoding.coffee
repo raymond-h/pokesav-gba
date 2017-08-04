@@ -41,12 +41,6 @@ exports.toDecoded = (byte) ->
 			
 		when 0xAE
 			0xAD
-			
-		when 0xB5
-			0x2642
-			
-		when 0xB6
-			0x2640
 
 		else ' '
 
