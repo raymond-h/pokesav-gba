@@ -30,28 +30,28 @@ exports.toDecoded = (byte) ->
 		when 0xA1 <= byte <= 0xAA
 			String.fromCharCode 48 + (byte - 0xA1)
 			
-		when 0xAB
+		when byte is 0xAB
 			"!"
 			
-		when 0xAC
+		when byte is 0xAC
 			"?"
 			
-		when 0xAD
+		when byte is 0xAD
 			"."
 			
-		when 0xAE
+		when byte is 0xAE
 			"-"
 			
-		when 0xAF
+		when byte is 0xAF
 			"・"
 			
-		when 0xB0
+		when byte is 0xB0
 			"…"
 			
-		when 0xB5
+		when byte is 0xB5
 			"♂"
 			
-		when 0xB6
+		when byte is 0xB6
 			"♀"
 			
 		when 0x1A <= byte <= 0x1d
