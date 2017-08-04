@@ -29,6 +29,24 @@ exports.toDecoded = (byte) ->
 
 		when 0xA1 <= byte <= 0xAA
 			String.fromCharCode 48 + (byte - 0xA1)
+			
+		when 0xAB
+			0x21
+			
+		when 0xAC
+			0x3F
+			
+		when 0xAD
+			0x2E
+			
+		when 0xAE
+			0xAD
+			
+		when 0xB5
+			0x2642
+			
+		when 0xB6
+			0x2640
 
 		else ' '
 
